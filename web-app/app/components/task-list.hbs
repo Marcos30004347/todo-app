@@ -1,7 +1,11 @@
-<h2>Tasks:</h2>
-{{#each @tasks as |task|}}
-  <Task @title={{task.title}}>
-    {{task.description}}
-  </Task>
-{{/each}}
+<div class="task-list">
+  <h2 class="task-list-title">Tasks:</h2>
 
+  {{#each @tasks as |task|}}
+    <Task @title={{task.title}}>
+      {{task.description}}
+    </Task>
+  {{/each}}
+
+  <button class="task-likst-create-task-btn" {{on "click" (fn this.createTask)}}>Create Task</button>
+</div>
