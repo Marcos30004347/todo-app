@@ -1,0 +1,9 @@
+<h4
+  {{did-insert (fn this.log "insert")}}
+  {{did-update (fn this.log "update")}}
+  {{will-destroy (fn this.log "destroy")}}
+>
+  {{@title}}
+</h4>
+{{yield description}}
+{{!-- <button {{on "click" (fn this.teste)}}>teste</button> --}}
