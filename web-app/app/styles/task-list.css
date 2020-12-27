@@ -1,7 +1,7 @@
 .task-list {
   display: flex;
   flex-direction: column;
-  width: 18em;
+  width: 17em;
   border: 1px solid black;
   padding: 1em;
 }
@@ -23,6 +23,7 @@
 
 .task-list .task {
   margin-left: auto;
+  margin-top: 1em;
 }
 
 .task-likst-create-task-btn:focus {

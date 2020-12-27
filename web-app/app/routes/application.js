@@ -37,12 +37,14 @@ export default class ApplicationRoute extends Route {
         }
       ]
     });
-    const task = this.store.peekRecord("task", 1);
-    console.log(task.title);
-    const tasks = this.store.peekAll("task");
-    console.log(tasks.toArray()[0].title);
+
     return {
-      tasks: tasks.toArray(),
+      tasks: this.store.peekAll("task"),
     }
+  }
+
+  setupController(controller, model) {
+    super.setupController(controller, model);
+    this.controllerFor('application').set('tasks', this.store.peekAll("task"));
   }
 }
