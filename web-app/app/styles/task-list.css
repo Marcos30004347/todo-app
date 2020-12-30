@@ -1,0 +1,35 @@
+.task-list {
+  display: flex;
+  flex-direction: column;
+  width: 17em;
+  border: 1px solid black;
+  padding: 1em;
+}
+
+.task-list-title {
+
+}
+
+.task-likst-create-task-btn {
+  margin-left: auto;
+  margin-top: 1em;
+  width: 15em;
+  height: 3em;
+  border: 1px solid black;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.task-list .task {
+  margin-left: auto;
+  margin-top: 1em;
+}
+
+.task-likst-create-task-btn:focus {
+  outline:0;
+}
+
+.task-likst-create-task-btn:hover{
+  background-color: rgb(207, 207, 207);
+}

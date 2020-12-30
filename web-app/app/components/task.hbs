@@ -1,0 +1,15 @@
+<div
+  class="task"
+  {{did-insert (fn this.log "insert")}}
+  {{did-update (fn this.log "update")}}
+  {{will-destroy (fn this.log "destroy")}}
+>
+<div class="task-header">
+  <h4 class="task-title">
+    {{@title}}
+  </h4>
+  <button class="task-edit-btn">...</button>
+</div>
+  {{yield description}}
+</div>
+{{!-- <button {{on "click" (fn this.teste)}}>teste</button> --}}
