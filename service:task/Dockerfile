@@ -1,10 +1,18 @@
-FROM ruby
+FROM ubuntu
 
-WORKDIR /
-COPY . .
+WORKDIR /service:task
+COPY . /service:task
 
-RUN apt-get install make && make
+RUN apt-get update
+RUN apt-get install -y openssl
+RUN apt-get install -y make
+RUN apt-get install -y ruby
 
-EXPOSE 80
+RUN gem install bundler
 
-CMD ["./scripts/entrypoint.sh"]
+RUN gem install grpc
+RUN gem install grpc-tools
+RUN bundle install
+
+EXPOSE 50051
+ENTRYPOINT [ "make", "run-server" ]
