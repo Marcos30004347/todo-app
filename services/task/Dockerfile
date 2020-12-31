@@ -16,7 +16,8 @@ RUN gem install mongo
 RUN gem install grpc
 RUN gem install grpc-tools
 
-RUN bundle install
+# RUN bundle install
+RUN make setup
 
 EXPOSE 50051
 ENTRYPOINT [ "make", "run-server" ]
