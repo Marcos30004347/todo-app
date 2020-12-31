@@ -1,7 +1,7 @@
 FROM ubuntu
 
-WORKDIR /service:task
-COPY . /service:task
+WORKDIR /task-service
+COPY . /task-service
 
 RUN apt-get update
 RUN apt-get install -y gcc

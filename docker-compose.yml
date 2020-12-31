@@ -5,7 +5,7 @@ services:
   task-service:
     container_name: task-service
     restart: always
-    build: ./service:task
+    build: ./service/task
     ports: 
       - '50051:50051'
     links: 
@@ -14,8 +14,8 @@ services:
           - "taskdb"
     volumes:
       - type: bind
-        source: ./service:task
-        target: /service:task
+        source: ./service/task
+        target: /task-service
   # Task-Service database
   taskdb:
     image: mongo
