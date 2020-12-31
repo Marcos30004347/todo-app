@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  # Task-Service
+  task-service:
+    container_name: task-service
+    restart: always
+    build: ./service:task
+    ports: 
+      - '50051:50051'
+    links: 
+      - taskdb
+    depends_on:
+          - "taskdb"
+    volumes:
+      - type: bind
+        source: ./service:task
+        target: /service:task
+  # Task-Service database
+  taskdb:
+    image: mongo
+    container_name: taskdb # connect using url=mongodb://taskdb:27017
+    ports: 
+      - '27017:27017'
+    volumes:
+      - task-mongodb-volume:/data/db
+volumes:
+  task-mongodb-volume:  

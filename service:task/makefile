@@ -1,4 +1,4 @@
-include utils.mk
+include utils/utils.mk
 
 PROTOS_FOLDER=./protos
 
