@@ -10,13 +10,14 @@ class TaskManager
     end
 
     def self.create_task(user, title, description, due_date)
-        @@task_collection.insert_one({
+        id = @@task_collection.insert_one({
             'user'          => user,
             'title'         => title,
             'state'         => 0,
             'description'   => description,
             'due_date'      => due_date
-        })
+        }).inserted_id
+        id
     end
 
     def self.update_task_title(id, new_title)
@@ -52,6 +53,10 @@ class TaskManager
     end
 
     def self.find_task(id)
-        @@task_collection.find({ '_id' => id })
+        @@task_collection.find({ '_id' => id }).first
+    end
+
+    def self.find_user_tasks(user)
+        @@task_collection.find({ 'user' => user })
     end
 end

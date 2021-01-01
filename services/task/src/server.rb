@@ -12,7 +12,8 @@ require 'helloworld_services_pb'
 require 'todo-mongo'
 require 'todo-logger'
 
-require 'task-manager'
+# require './task-manager'
+require 'task'
 
 class GreeterServer < Helloworld::Greeter::Service
     def say_hello(hello_req, _unused_call)
@@ -30,14 +31,30 @@ def main
     ToDo::Logger.warn "Hello"
     ToDo::Logger.error "Hello"
     
-    teste = TaskManager.create_task(1, "Teste", "To do", Time.now.utc.iso8601)
-    ToDo::Logger.debug teste
-    ToDo::Logger.debug teste.inserted_id
+    # teste = TaskManager.create_task(1, "Teste", "To do", Time.now.utc.iso8601)
+    # ToDo::Logger.debug teste
+    # ToDo::Logger.debug teste.inserted_id
     
-    ToDo::Logger.debug  TaskManager.find_task(teste.inserted_id).count
-    result = TaskManager.find_task(teste.inserted_id).each do |document|
-        ToDo::Logger.debug document[:title]
-    end
+    # ToDo::Logger.debug  TaskManager.find_task(teste.inserted_id).count
+    # result = TaskManager.find_task(teste.inserted_id).each do |document|
+    #     ToDo::Logger.debug document[:title]
+    # end
+    ToDo::Logger.debug "Creating task"
+    task = Task.create(1, "To do", "To do something.", Time.now.utc.iso8601)
+    ToDo::Logger.debug task.title
+    
+    
+    ToDo::Logger.debug "Updating task title"
+    task.title = "Im going to do this!"
+    ToDo::Logger.debug task.title
+
+    ToDo::Logger.debug "Loading by id"
+    task_cp = Task.load(task.id)
+    ToDo::Logger.debug task_cp.title
+
+    ToDo::Logger.debug "#{task.id}"
+    ToDo::Logger.debug "#{task_cp.id}"
+
 
     # TaskManager.find_task(teste.inserted_id)
 
