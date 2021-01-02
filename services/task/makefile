@@ -1,13 +1,17 @@
-include utils/utils.mk
-
 PROTOS_FOLDER=./protos
+PASSPHRASE?=1234
+
+define print
+	echo "\033[0;32m$(1)\033[0;39m"
+endef
 
 ##################################################
 ## Common
 ##################################################
-setup: \
-install-dependencies \
-compile-protos 
+setup:\
+install-dependencies\
+compile-protos\
+keys
 
 ##################################################
 ## Run's
@@ -72,17 +76,65 @@ compile-protos:
 ##################################################
 ## Security
 ##################################################
-#https://jamielinux.com/docs/openssl-certificate-authority/
-server-keys:
-	openssl genrsa -out certs/server.key 2048
-	openssl req -new -sha256 -key certs/server.key -out certs/server.csr -config config.conf
-	openssl x509 -req -days 3650 -in certs/server.csr -out certs/server.pem -signkey certs/server.key -extensions ext -extfile config.conf
+# https://jamielinux.com/docs/openssl-certificate-authority/create-the-root-pair.html
+# https://roll.urown.net/ca/ca_root_setup.html
+# https://stackoverflow.com/questions/37714558/how-to-enable-server-side-ssl-for-grpc
+serial:
+	openssl rand -hex 16 > serial
 
-client-keys:
-	openssl genrsa -out certs/client.key 2048
-	openssl req -new -sha256 -key certs/client.key -out certs/client.csr -config config.conf
-	openssl x509 -req -days 3650 -in certs/client.csr -out certs/client.pem -signkey certs/server.key -extensions ext -extfile config.conf
+keys:\
+keys-setup\
+ca-key\
+ca-certificate\
+server-key\
+server-signing-req\
+server-sign-certificate\
+server-remove-passphrase\
+client-key\
+client-signing-req\
+client-sign-certificate\
+client-remove-passphrase\
+
+keys-setup:
+	if [ -d "./certs" ]; then rm -Rf ./certs; fi
+	mkdir certs
 
 ca-key:
-	openssl genrsa -des3 -out CA-key.pem 2048
-	openssl req -new -key CA-key.pem -x509 -days 1000 -out CA-cert.pem
+	$(call print,Generate CA key:)
+	openssl genrsa -passout pass:$(PASSPHRASE) -des3 -out certs/ca.key 4096
+
+ca-certificate:
+	$(call print,Generate CA certificate:)
+	openssl req -passin pass:$(PASSPHRASE) -new -x509 -days 365 -key certs/ca.key -out certs/ca.crt -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=MyRootCA" -config config.conf
+
+server-key:
+	$(call print,Generate server key:)
+	openssl genrsa -passout pass:$(PASSPHRASE) -des3 -out certs/server.key 4096
+
+server-signing-req:
+	$(call print,Generate server signing request:)
+	openssl req -passin pass:$(PASSPHRASE) -new -key certs/server.key -out certs/server.csr -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=localhost" -config config.conf
+
+server-sign-certificate:
+	$(call print,Self-sign server certificate:)
+	openssl x509 -req -passin pass:$(PASSPHRASE) -days 365 -in certs/server.csr -CA certs/ca.crt -CAkey certs/ca.key -set_serial 01 -out certs/server.crt
+
+server-remove-passphrase:
+	$(call print,Remove passphrase from server key:)
+	openssl rsa -passin pass:$(PASSPHRASE) -in certs/server.key -out certs/server.key
+
+client-key:
+	$(call print,Generate client key:)
+	openssl genrsa -passout pass:$(PASSPHRASE) -des3 -out certs/client.key 4096
+
+client-signing-req:
+	$(call print,Generate client signing request:)
+	openssl req -passin pass:$(PASSPHRASE) -new -key certs/client.key -out certs/client.csr -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=client" -config config.conf
+
+client-sign-certificate:
+	$(call print,Self-sign client certificate:)
+	openssl x509 -passin pass:$(PASSPHRASE) -req -days 365 -in certs/client.csr -CA certs/ca.crt -CAkey certs/ca.key -set_serial 01 -out certs/client.crt
+
+client-remove-passphrase:
+	$(call print,Remove passphrase from client key:)
+	openssl rsa -passin pass:$(PASSPHRASE) -in certs/client.key -out certs/client.key

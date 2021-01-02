@@ -10,16 +10,18 @@ require 'helloworld_services_pb'
 require 'todo-grpc'
 
 def main
-  client = GRPCClient.new('localhost:50051')
-  # hostname = ARGV.size > 1 ?  ARGV[1] : 'localhost:50051'
-  # stub = Helloworld::Greeter::Stub.new(hostname, :this_channel_is_insecure)
-  client.add_endpoint('say_hello')
+  this_dir = File.expand_path(File.dirname(__FILE__))
+  certs_dir = File.join(this_dir, '../certs')
+
+  files = ['ca.crt', 'client.key', 'client.crt']
+  certs = files.map { |f| File.open(File.join(certs_dir, f)).read }
+
+  connection = GRPCConnection.new('localhost:50051', certs)
+  client = connection.client
 
   p "Greeting: #{client.say_hello(Helloworld::HelloRequest.new(name: "Marcos")).message}"
-  p "Greeting: #{client.stub.say_hello(Helloworld::HelloRequest.new(name: "Marcos")).message}"
   
-  # message = stub.say_hello(Helloworld::HelloRequest.new(name: "Marcos")).message
-  # p "Greeting: #{message}"
+
 end
 
 main

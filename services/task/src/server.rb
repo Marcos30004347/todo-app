@@ -56,7 +56,14 @@ def main
     ToDo::Logger.debug "#{task_cp.id}"
 
     # gRPC API
-    server = GRPCServer.new(GreeterServer, '0.0.0.0:50051')
+
+    this_dir = File.expand_path(File.dirname(__FILE__))
+    certs_dir = File.join(this_dir, '../certs')
+
+    files = ['ca.crt', 'server.key', 'server.crt']
+    certs = files.map { |f| File.open(File.join(certs_dir, f)).read }
+
+    server = GRPCServer.new(GreeterServer, '0.0.0.0:50051', certs)
     server.run
 
 
