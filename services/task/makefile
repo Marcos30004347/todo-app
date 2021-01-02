@@ -11,7 +11,7 @@ endef
 setup:\
 install-dependencies\
 compile-protos\
-keys
+create-certificates
 
 ##################################################
 ## Run's
@@ -82,8 +82,8 @@ compile-protos:
 serial:
 	openssl rand -hex 16 > serial
 
-keys:\
-keys-setup\
+create-certificates:\
+certificates-setup\
 ca-key\
 ca-certificate\
 server-key\
@@ -95,7 +95,7 @@ client-signing-req\
 client-sign-certificate\
 client-remove-passphrase\
 
-keys-setup:
+certificates-setup:
 	if [ -d "./certs" ]; then rm -Rf ./certs; fi
 	mkdir certs
 
