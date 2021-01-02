@@ -69,4 +69,20 @@ compile-protos:
 		grpc_tools_ruby_protoc -I ${PROTOS_FOLDER} --ruby_out=lib --grpc_out=lib $$proto; \
 	done
 
+##################################################
+## Security
+##################################################
+#https://jamielinux.com/docs/openssl-certificate-authority/
+server-keys:
+	openssl genrsa -out certs/server.key 2048
+	openssl req -new -sha256 -key certs/server.key -out certs/server.csr -config config.conf
+	openssl x509 -req -days 3650 -in certs/server.csr -out certs/server.pem -signkey certs/server.key -extensions ext -extfile config.conf
 
+client-keys:
+	openssl genrsa -out certs/client.key 2048
+	openssl req -new -sha256 -key certs/client.key -out certs/client.csr -config config.conf
+	openssl x509 -req -days 3650 -in certs/client.csr -out certs/client.pem -signkey certs/server.key -extensions ext -extfile config.conf
+
+ca-key:
+	openssl genrsa -des3 -out CA-key.pem 2048
+	openssl req -new -key CA-key.pem -x509 -days 1000 -out CA-cert.pem
