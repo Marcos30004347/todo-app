@@ -27,23 +27,29 @@ class Task
     # Return the task title
     def title; @title; end
 
+    # Return the task description
+    def description; @description; end
+
+    # Return the task state
+    def state; @state; end
+
+    # Return the task due date
+    def due_date; @due_date; end
+
+    # Return the task id
+    def id; @id; end
+
     # Update the task title
     def title=(new_title)
         TaskManager.update_task_title(@id, new_title)
         @title = new_title
     end
 
-    # Return the task description
-    def description; @description; end
-
     # Update the Task description
     def description=(new_description)
         TaskManager.update_task_description(@id, new_description)
         @description = new_description
     end
-
-    # Return the task state
-    def state; @state; end
     
     # Update the task state
     def state=(new_state)
@@ -51,15 +57,14 @@ class Task
         @state = new_state
     end
 
-    # Return the task due date
-    def due_date; @due_date; end
-
     # Update the task due date
     def due_date=(new_due_date)
         TaskManager.update_new_due_date(@id, new_due_date)
         @due_date = new_due_date
     end
 
-    # Return the task id
-    def id; @id; end
+    # Delete the task
+    def delete
+        TaskManager.delete_task(@id)
+    end
 end
