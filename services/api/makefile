@@ -50,21 +50,22 @@ install-dependencies:
 ## Protobufs
 ##################################################
 compile-protos:
-	$(call print,Compiling proto files inside the './protos' folder)
-	for proto in $(foreach dir,./protos,$(wildcard $(dir)/*)) ; do \
-		grpc_tools_node_protoc \
-		--js_out=import_style=commonjs,binary:lib/typescript/lib \
-		--grpc_out=lib/typescript/lib \
-		--plugin=protoc-gen-grpc=./node_modules/.bin/grpc_tools_node_protoc_plugin \
-		-I ./protos \
-		$$proto; \
+# $(call print,Compiling proto files inside the './protos' folder)
+# for proto in $(foreach dir,./protos,$(wildcard $(dir)/*)) ; do \
+# done
+	# grpc_tools_node_protoc \
+	# --js_out=import_style=commonjs,binary:lib/typescript/lib \
+	# --grpc_out=lib/typescript/lib \
+	# --plugin=protoc-gen-grpc=./node_modules/.bin/grpc_tools_node_protoc_plugin \
+	# -I ./protos \
+	# $$proto; \
 
-		grpc_tools_node_protoc \
-		--plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts \
-		--ts_out=lib/typescript/lib \
-		-I ./protos \
-		$$proto; \
-	done
+	# grpc_tools_node_protoc \
+	# --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts \
+	# --ts_out=lib/typescript/lib \
+	# -I ./protos \
+	# $$proto; \
+done
 
 ##################################################
 ## Security
