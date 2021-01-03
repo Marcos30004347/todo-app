@@ -9,9 +9,9 @@ $LOAD_PATH.unshift this_dir unless $LOAD_PATH.include?(this_dir)
 require 'grpc'
 require 'helloworld_services_pb'
 
-require 'todo-mongo'
-require 'todo-logger'
-require 'todo-grpc'
+require 'ruby/todo-mongo'
+require 'ruby/todo-logger'
+require 'ruby/todo-grpc'
 
 # require './task-manager'
 require 'task'

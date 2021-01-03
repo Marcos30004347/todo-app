@@ -1,4 +1,6 @@
-PROTOS_FOLDER=./protos
+# Passphrase used to create the ssl certificates and keys
+# override this with a strongger passphrase using 
+# 'make create-certificates PASSPHRASE=valid_pass' during the command call.
 PASSPHRASE?=1234
 
 define print
@@ -8,10 +10,8 @@ endef
 ##################################################
 ## Common
 ##################################################
-setup:\
-install-dependencies\
-compile-protos\
-create-certificates
+setup: compile-protos install-dependencies
+	$(call print,Setting up the Task Service)
 
 ##################################################
 ## Run's
@@ -28,7 +28,7 @@ run-client:
 ##################################################
 ## Docker Images
 ##################################################
-image:
+docker-image:
 	$(call print,Building Docker image)
 	docker build -t task-service .
 
@@ -69,8 +69,8 @@ install-ruby-dependencies:
 ##################################################
 compile-protos:
 	$(call print,Compiling proto files inside the './protos' folder)
-	for proto in $(foreach dir,$(PROTOS_FOLDER),$(wildcard $(dir)/*)) ; do \
-		grpc_tools_ruby_protoc -I ${PROTOS_FOLDER} --ruby_out=lib --grpc_out=lib $$proto; \
+	for proto in $(foreach dir,./protos,$(wildcard $(dir)/*)) ; do \
+		grpc_tools_ruby_protoc -I ./protos --ruby_out=lib/ruby/lib --grpc_out=lib/ruby/lib $$proto; \
 	done
 
 ##################################################
@@ -105,7 +105,7 @@ ca-key:
 
 ca-certificate:
 	$(call print,Generate CA certificate:)
-	openssl req -passin pass:$(PASSPHRASE) -new -x509 -days 365 -key certs/ca.key -out certs/ca.crt -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=MyRootCA" -config config.conf
+	openssl req -passin pass:$(PASSPHRASE) -new -x509 -days 365 -key certs/ca.key -out certs/ca.crt -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=MyRootCA" -config ssl.conf
 
 server-key:
 	$(call print,Generate server key:)
@@ -113,7 +113,7 @@ server-key:
 
 server-signing-req:
 	$(call print,Generate server signing request:)
-	openssl req -passin pass:$(PASSPHRASE) -new -key certs/server.key -out certs/server.csr -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=localhost" -config config.conf
+	openssl req -passin pass:$(PASSPHRASE) -new -key certs/server.key -out certs/server.csr -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=localhost" -config ssl.conf
 
 server-sign-certificate:
 	$(call print,Self-sign server certificate:)
@@ -129,7 +129,7 @@ client-key:
 
 client-signing-req:
 	$(call print,Generate client signing request:)
-	openssl req -passin pass:$(PASSPHRASE) -new -key certs/client.key -out certs/client.csr -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=client" -config config.conf
+	openssl req -passin pass:$(PASSPHRASE) -new -key certs/client.key -out certs/client.csr -subj  "/C=BR/ST=MG/L=Belo Horizonte/O=YourCompany/OU=ToDoApp/CN=client" -config ssl.conf
 
 client-sign-certificate:
 	$(call print,Self-sign client certificate:)
