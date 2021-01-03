@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-require 'task-manager'
+require_relative 'task-manager'
 
 class Task
     def initialize(id, user, title, description, due_date, state)

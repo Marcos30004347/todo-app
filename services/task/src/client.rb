@@ -1,8 +1,10 @@
 #!/usr/bin/ruby
 
-this_dir = File.expand_path(File.dirname(__FILE__))
-lib_dir = File.join(this_dir, 'lib')
-$LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
+# this_dir = File.expand_path(File.dirname(__FILE__))
+# lib_dir = File.join(this_dir, '../lib/ruby/lib')
+
+# $LOAD_PATH.unshift lib_dir  unless $LOAD_PATH.include?(lib_dir)
+# $LOAD_PATH.unshift this_dir unless $LOAD_PATH.include?(this_dir)
 
 require 'grpc'
 require 'helloworld_services_pb'

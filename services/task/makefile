@@ -18,11 +18,11 @@ setup: compile-protos install-dependencies
 ##################################################
 run-server:
 	$(call print,Starting the Server)
-	bundle exec ./src/server.rb
+	bundle exec ruby -Ilib/ruby/lib ./src/server.rb
 
 run-client:
 	$(call print,Starting the Client)
-	bundle exec ./src/client.rb
+	bundle exec ruby -Ilib/ruby/lib ./src/client.rb
 
 
 ##################################################

@@ -1,20 +1,20 @@
 #!/usr/bin/ruby
 
-this_dir = File.expand_path(File.dirname(__FILE__))
-lib_dir = File.join(this_dir, '../lib')
+# this_dir = File.expand_path(File.dirname(__FILE__))
+# lib_dir = File.join(this_dir, '../lib/ruby/lib')
 
-$LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
-$LOAD_PATH.unshift this_dir unless $LOAD_PATH.include?(this_dir)
+# $LOAD_PATH.unshift lib_dir  unless $LOAD_PATH.include?(lib_dir)
+# $LOAD_PATH.unshift this_dir unless $LOAD_PATH.include?(this_dir)
 
 require 'grpc'
 require 'helloworld_services_pb'
 
-require 'ruby/todo-mongo'
-require 'ruby/todo-logger'
-require 'ruby/todo-grpc'
+require 'todo-mongo'
+require 'todo-logger'
+require 'todo-grpc'
 
 # require './task-manager'
-require 'task'
+require_relative 'task'
 
 class GreeterServer < Helloworld::Greeter::Service
     def say_hello(hello_req, _unused_call)
