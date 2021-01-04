@@ -3,3 +3,4 @@ build/
 dist/
 protos/
 lib/
+certs/
