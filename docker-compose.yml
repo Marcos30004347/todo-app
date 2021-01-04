@@ -1,6 +1,21 @@
 version: '3'
 
 services:
+
+  # REST-API-Service
+  api-service:
+    container_name: api-service
+    restart: always
+    build: ./services/api
+    ports: 
+      - '8080:8080'
+    links: 
+      - task-service
+    depends_on:
+          - "task-service"
+    volumes:
+      - ./services/api:/api-service
+
   # Task-Service
   task-service:
     container_name: task-service
@@ -8,15 +23,14 @@ services:
     build: ./services/task
     ports: 
       - '50051:50051'
-    links: 
+    links:
       - taskdb
     depends_on:
           - "taskdb"
     volumes:
       - ./services/task:/task-service
-      # - type: bind
-      #   source: ./services/task
-      #   target: /task-service
+
+
   # Task-Service database
   taskdb:
     image: mongo

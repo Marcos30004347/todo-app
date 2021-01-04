@@ -20,4 +20,4 @@ RUN gem install grpc-tools
 RUN make setup
 RUN ls
 EXPOSE 50051
-ENTRYPOINT [ "make", "run-server" ]
+ENTRYPOINT [ "make", "run" ]

@@ -1,1 +1,0 @@
-The NodeJS code that may be shared between Microservices that uses the NodeJS programming language.

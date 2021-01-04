@@ -32,9 +32,9 @@ system-update:
 
 # Setup the system
 system-setup: setup-protos setup-libs
-	for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
-		make -C $$path setup; \
-	done
+	# for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
+	# 	make -C $$path setup; \
+	# done
 
 setup-install-dependencies:
 	for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
@@ -51,11 +51,11 @@ compile-protos:
 			while IFS= read -r line || [[ -n "$$line" ]]; do\
 				IFS== read -r left right <<< "$$line";\
 				\
-				if [[ $$left == service_libs ]]; then \
-					echo $$right | tr \, \\n | while read val ; do \
+				if [[ $$left == required_libraries ]]; then \
+					echo $$right | tr \, \\n | while read lang ; do \
 						$(call print,Compiling proto files inside the '$$path/protos' folder); \
 						for filename in $$path/protos/*.proto; do\
-							if [[ $$val == ruby ]]; then \
+							if [[ $$lang == ruby ]]; then \
 								grpc_tools_ruby_protoc -I $$path/protos --ruby_out=$$path/lib/ruby/lib --grpc_out=$$path/lib/ruby/lib $$filename; \
 							fi; \
 						done; \
@@ -63,7 +63,7 @@ compile-protos:
 				fi;\
 			done < $$env_file;\
 		else \
-			$(call printError,No service.conf find in $$path);\
+			$(call printError,No service.conf found in $$path);\
 		fi; \
 	done
 
@@ -75,9 +75,6 @@ setup-protos:
 	done
 
 setup-libs:
-	echo $(call word-equal,Name=Val,1)
-	echo $(call word-equal,Name=Val,2)
-
 	for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
 		$(call print,\nWorking on $$path); \
 		if [ -f $$path/service.conf ]; then \
@@ -90,25 +87,17 @@ setup-libs:
 			while IFS= read -r line || [[ -n "$$line" ]]; do\
 				IFS== read -r left right <<< "$$line";\
 				\
-				if [[ $$left == service_libs ]]; then \
-					echo $$right | tr \, \\n | while read val ; do \
+				if [[ $$left == required_libraries ]]; then \
+					echo $$right | tr \, \\n | while read lang ; do \
 						if [ -d "$$path/lib" ]; then \
-							$(call print,Copying lib/$$val to $$path/lib); \
-							cp -a ./lib/$$val/. $$path/lib/$$val; \
+							$(call print,Copying lib/$$lang to $$path/lib); \
+							cp -a ./lib/$$lang/. $$path/lib/$$lang; \
 						fi; \
 					done; \
 				fi;\
 			done < $$env_file;\
 		else \
-			$(call printError,No service.conf find in $$path); \
+			$(call printError,No service.conf found in $$path); \
 		fi; \
 	done
 
-# Setup the task service
-setup-task-service:
-	# Remove current lib folder and Replace it
-	if [ -d "./services/task/lib" ]; then rm -Rf ./services/task/lib; fi
-	cp -a ./lib/ruby/lib/. ./services/task/lib/
-
-	# Call Service setup
-	make -C services/task setup
