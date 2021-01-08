@@ -6,10 +6,10 @@ for path in `ls -d ./services/*` ; do
 
         while IFS= read -r line || [[ -n "$line" ]]; do\
             IFS== read -r left right <<< "$line";
-            if [[ $left == service_libs ]]; then
+            if [[ $left == required_libraries ]]; then
                 echo $right | tr \, \\n | while read lang ; do
                     for filename in $path/protos/*.proto; do
-                        make .C $path protos
+                        make -C $path compile-protos
                     done;
                 done;
             fi;

@@ -12,7 +12,7 @@ for path in `ls -d ./services/*` ; do
             
             if [[ $left == required_libraries ]]; then 
                 echo $right | tr \, \\n | while read lang ; do
-                    if [ -d "$$path/lib" ]; then 
+                    if [ -d "$path/lib" ]; then 
                         cp -a ./lib/$lang/. $path/lib/$lang;
                     fi; 
                 done; 

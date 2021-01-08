@@ -3,7 +3,6 @@
 # https://roll.urown.net/ca/ca_root_setup.html
 # https://stackoverflow.com/questions/37714558/how-to-enable-server-side-ssl-for-grpc
 
-@echo off
 PASS=1234
 CONFIG_FILE=ssl.conf
 SUBJECT_CA="/C=US/ST=CA/L=Cupertino/O=YourCompany/OU=YourApp/CN=MyRootCA"

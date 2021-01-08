@@ -10,21 +10,21 @@ setup: compile-protos
 	done
 
 run-dev:
-	npm run start:dev
+	npm run dev
 
 docker-image:
 	docker build -t api-service .
 
 run-image:
-	docker run -p 8080:8080 -d user-service:latest
+	docker run -p 8080:8080 -d api-service:latest
 
 run-image-iterative:
-	docker run -it -p 8080:8080 user-service:latest
+	docker run -it -p 8080:8080 api-service:latest
 
 install-dependencies:
 	npm-install
 
-protos:
+compile-protos:
 	for proto in `ls -d ./protos/*`; do \
 		grpc_tools_node_protoc \
 		--js_out=import_style=commonjs,binary:lib/typescript/lib \

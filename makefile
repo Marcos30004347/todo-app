@@ -1,103 +1,42 @@
-word-equal = $(word $2,$(subst =, ,$1))
-word-semi = $(word $2,$(subst ;, ,$1))
-
-define print
-	echo "\033[0;32m$(1)\033[0;39m"
-endef
-
-define printError
-	echo "\033[0;31m$(1)\033[0;39m"
-endef
-
-# Run System in detatched mode
-system-up-detatched: \
-setup-libs \
-system-update
+run-detatched: setup update
 	docker-compose up -d --build
 
-# Run System
-system-up: \
-setup-libs \
-system-update
+run: setup update
 	docker-compose up --force-recreate
 
-# Turn Off the running system
-system-down:
+api:
+	docker-compose build api-service
+
+user-service:
+	docker-compose build user-service
+
+task:
+	docker-compose build task-service
+
+auth:
+	docker-compose build auth-service
+
+
+stop:
 	docker-compose down
 
-# Update the services images
-system-update:
+update:
 	docker-compose rm -f
 	docker-compose pull   
 
-# Setup the system
-system-setup: setup-protos setup-libs
-	# for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
-	# 	make -C $$path setup; \
-	# done
+cleanup:
+	docker system prune -f -a
 
-setup-install-dependencies:
+setup:
+	for script in `ls -d ./scripts/*`; do \
+		chmod 777 $$script; \
+	done
+	./scripts/setup-libraries.sh
+	./scripts/setup-protos.sh
+	./scripts/compile-protos.sh
+
+
+install-dependencies:
 	for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
 		make -C $$path install-dependencies; \
 	done
-
-compile-protos:
-	for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
-		$(call print,\nWorking on $$path); \
-		if [ -f $$path/service.conf ]; then \
-			env_file="$$path/service.conf";\
-			echo using config file $$env_file; \
-			\
-			while IFS= read -r line || [[ -n "$$line" ]]; do\
-				IFS== read -r left right <<< "$$line";\
-				\
-				if [[ $$left == required_libraries ]]; then \
-					echo $$right | tr \, \\n | while read lang ; do \
-						$(call print,Compiling proto files inside the '$$path/protos' folder); \
-						for filename in $$path/protos/*.proto; do\
-							if [[ $$lang == ruby ]]; then \
-								grpc_tools_ruby_protoc -I $$path/protos --ruby_out=$$path/lib/ruby/lib --grpc_out=$$path/lib/ruby/lib $$filename; \
-							fi; \
-						done; \
-					done; \
-				fi;\
-			done < $$env_file;\
-		else \
-			$(call printError,No service.conf found in $$path);\
-		fi; \
-	done
-
-setup-protos:
-	for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
-		if [ -d "$$path/protos" ]; then rm -Rf $$path/protos; fi; \
-		mkdir $$path/protos; \
-		cp -a ./protos/. $$path/protos; \
-	done
-
-setup-libs:
-	for path in $(foreach dir,./services,$(wildcard $(dir)/*)) ; do \
-		$(call print,\nWorking on $$path); \
-		if [ -f $$path/service.conf ]; then \
-			env_file="$$path/service.conf";\
-			echo using config file $$env_file; \
-			$(call print,Setting $$path library folder); \
-			if [ -d "$$path/lib" ]; then rm -Rf $$path/lib; fi; \
-			mkdir $$path/lib; \
-			\
-			while IFS= read -r line || [[ -n "$$line" ]]; do\
-				IFS== read -r left right <<< "$$line";\
-				\
-				if [[ $$left == required_libraries ]]; then \
-					echo $$right | tr \, \\n | while read lang ; do \
-						if [ -d "$$path/lib" ]; then \
-							$(call print,Copying lib/$$lang to $$path/lib); \
-							cp -a ./lib/$$lang/. $$path/lib/$$lang; \
-						fi; \
-					done; \
-				fi;\
-			done < $$env_file;\
-		else \
-			$(call printError,No service.conf found in $$path); \
-		fi; \
-	done
-

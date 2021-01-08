@@ -8,3 +8,7 @@ To create the docker image run 'make docker-image'
 
 Dependencies:
 Ruby >= 2.6 
+
+TODO:
+    Setup development and production enviroments
+    Document everything

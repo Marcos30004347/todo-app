@@ -1,37 +1,49 @@
 version: '3'
 
 services:
-
-  # REST-API-Service
   api-service:
-    container_name: api-service
+    container_name: api
     restart: always
     build: ./services/api
-    ports: 
-      - '8080:8080'
-    links: 
+    ports:
+      - '80:80'
+    links:
       - task-service
-    depends_on:
-          - "task-service"
+      - auth-service
     volumes:
       - ./services/api:/api-service
+      
+  auth-service:
+    container_name: auth-service
+    restart: always
+    build: ./services/auth
+    ports: 
+      - '8080:8080'
+      - '8081:8081'
+    depends_on:
+          - "authdb"
+    volumes:
+      - ./services/auth/src:/auth-service/src
+      - ./services/auth/lib:/auth-service/lib
+      - ./services/auth/protos:/auth-service/protos
 
-  # Task-Service
   task-service:
     container_name: task-service
     restart: always
     build: ./services/task
     ports: 
       - '50051:50051'
+      - '50052:50052'
     links:
       - taskdb
     depends_on:
           - "taskdb"
     volumes:
-      - ./services/task:/task-service
+      - ./services/task/src:/task-service/src
+      - ./services/task/lib:/task-service/lib
+      - ./services/task/protos:/task-service/protos
 
 
-  # Task-Service database
   taskdb:
     image: mongo
     container_name: taskdb # connect using url=mongodb://taskdb:27017
@@ -39,5 +51,15 @@ services:
       - '27017:27017'
     volumes:
       - task-mongodb-volume:/data/db
+
+  authdb:
+    image: mongo
+    container_name: authdb # connect using url=mongodb://taskdb:27017
+    ports: 
+      - '27018:27018'
+    volumes:
+      - auth-mongodb-volume:/data/db 
+
 volumes:
   task-mongodb-volume:  
+  auth-mongodb-volume:  

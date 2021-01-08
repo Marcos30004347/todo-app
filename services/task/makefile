@@ -1,5 +1,5 @@
 run:
-	bundle exec ruby -Ilib/ruby/lib ./src/server.rb
+	bundle exec ruby -Ilib/ruby/lib ./src/index.rb 
 
 setup: install-dependencies compile-protos
 	for script in `ls -d ./lib/bash/*`; do \
@@ -20,7 +20,7 @@ install-dependencies:
 	gem install grpc-tools
 	bundle install
 
-protos:
+compile-protos:
 	for proto in `ls -d ./protos/*`; do \
 		grpc_tools_ruby_protoc -I ./protos --ruby_out=lib/ruby/lib --grpc_out=lib/ruby/lib $$proto; \
 	done
