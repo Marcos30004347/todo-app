@@ -24,7 +24,6 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get -y install nodejs
 
 # RUN npm install -g grpc-tools grpc_tools_node_protoc_ts
-RUN npm rebuild
 RUN npm install
 # RUN npm install -g grpc grpc-tools grpc_tools_node_protoc_ts
 # RUN make setup

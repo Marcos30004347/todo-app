@@ -1,12 +1,23 @@
 version: '3'
 
 services:
+  web-app:
+    container_name: web-app
+    restart: always
+    build: ./app
+    ports:
+      - '80:80'
+    links:
+      - api-service
+    volumes:
+      - ./app:/app
+      
   api-service:
-    container_name: api
+    container_name: todo-api
     restart: always
     build: ./services/api
     ports:
-      - '80:80'
+      - '1000:1000'
     links:
       - task-service
       - auth-service

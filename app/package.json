@@ -57,5 +57,8 @@
   },
   "ember": {
     "edition": "octane"
+  },
+  "dependencies": {
+    "ember-cli-template-lint": "^2.0.2"
   }
 }
