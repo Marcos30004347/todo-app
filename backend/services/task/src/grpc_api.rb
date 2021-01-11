@@ -5,7 +5,6 @@ require 'todo-logger'
 require 'todo-grpc'
 
 require 'helloworld_services_pb'
-require_relative 'task'
 
 
 class GreeterServer < Helloworld::Greeter::Service
@@ -13,8 +12,6 @@ class GreeterServer < Helloworld::Greeter::Service
         Helloworld::HelloReply.new(message: "Hello #{hello_req.name}")
     end
 end
-
-
 
 class TaskServiceGRPCAPI
     def run! 

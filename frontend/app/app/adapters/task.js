@@ -1,5 +1,4 @@
 import JSONAPIAdapter from '@ember-data/adapter/json-api';
-import { pluralize } from 'ember-inflector';
 
 export default class TaskAdapter extends JSONAPIAdapter {
   host = 'http://localhost:1000/task-api';
@@ -9,46 +8,20 @@ export default class TaskAdapter extends JSONAPIAdapter {
   }
 
   updateRecord(store, type, snapshot) {
-    console.log("updateRecord");
-
-    var data = {};
-    var serializer = store.serializerFor(type.modelName);
-    var id = snapshot.id;
-    var url = this.buildURL(type.modelName, id, snapshot, 'updateRecord');
+    let data = {};
+    let serializer = store.serializerFor(type.modelName);
+    let id = snapshot.id;
+    let url = this.urlForUpdateRecord(id, type.modelName, snapshot);
     serializer.serializeIntoHash(data, type, snapshot, { includeId: true });
     return this.ajax(url, 'PATCH', { data: data });
   }
 
   findRecord(store, type, id, snapshot) {
-    console.log("findRecord");
-
-    var data = {};
-    var serializer = store.serializerFor(type.modelName);
-    var url = this.buildURL(type.modelName, id, snapshot, 'findRecord');
+    let data = {};
+    let serializer = store.serializerFor(type.modelName);
+    let url = this.urlForFindRecord(id, type.modelName, snapshot);
     serializer.serializeIntoHash(data, type, snapshot, { includeId: true });
     return this.ajax(url, 'GET', { data: data });
-  }
-
-  createRecord(store, type, snapshot) {
-    console.log("createRecord");
-
-    var data = {};
-    var serializer = store.serializerFor(type.modelName);
-    var id = snapshot.id;
-    var url = this.buildURL(type.modelName, id, snapshot, 'createRecord');
-    serializer.serializeIntoHash(data, type, snapshot, { includeId: true });
-    return this.ajax(url, 'POST', { data: data });
-  }
-
-  deleteRecord(store, type, snapshot) {
-    console.log("deleteRecord");
-
-    var data = {};
-    var serializer = store.serializerFor(type.modelName);
-    var id = snapshot.id;
-    var url = this.buildURL(type.modelName, id, snapshot, 'deleteRecord');
-    serializer.serializeIntoHash(data, type, snapshot, { includeId: true });
-    return this.ajax(url, 'DELETE', { data: data });
   }
 
   findAll (store, type, neverSet, snapshot) {
@@ -57,19 +30,39 @@ export default class TaskAdapter extends JSONAPIAdapter {
   }
 
   findMany (store, type, ids, snapshots) {
-    console.log("findMany");
-    this._super(store, type, ids, snapshots);
-
+    var url = this.urlForFindMany(ids, type.modelName, snapshot);
+    return this.ajax(url, 'GET');
   }
+
+  createRecord(store, type, snapshot) {
+    let data = {};
+    let serializer = store.serializerFor(type.modelName);
+    let id = snapshot.id;
+    let url = this.urlForCreateRecord(type.modelName, id, snapshot);
+
+    serializer.serializeIntoHash(data, type, snapshot, { includeId: true });
+
+    return this.ajax(url, 'POST', { data: data });
+  }
+
+  deleteRecord(store, type, snapshot) {
+    var data = {};
+    var serializer = store.serializerFor(type.modelName);
+    var id = snapshot.id;
+    var url = this.urlForDeleteRecord(id, type.modelName, snapshot);
+    serializer.serializeIntoHash(data, type, snapshot, { includeId: true });
+    return this.ajax(url, 'DELETE', { data: data });
+  }
+
 
   findBelongsTo (store, snapshot, url, relationship) {
     console.log("findBelongsTo");
-    this._super(store, snapshot, url, relationship);
+    super.findBelongsTo(store, snapshot, url, relationship);
   }
 
   findHasMany (store, snapshot, url, relationship) {
     console.log("findHasMany");
-    this._super(store, snapshot, url, relationship);
+    super.findHasMany(store, snapshot, url, relationship);
   }
 
 }

@@ -26,6 +26,10 @@ class Collection
         @collection.find(query)
     end
 
+    def aggregate(pipeline)
+        @collection.aggregate(pipeline)
+    end
+
     def update_many(query, update)
         @collection.update_many(query, update)
     end

@@ -12,69 +12,88 @@ class TaskServiceRESTAPI < Sinatra::Base
         set :server, :puma
     end 
 
-    # before do
-    #     if request.body.size > 0
-    #         request.body.rewind
-            
-    #         ToDo::Logger.debug request.body.read
-    #         ToDo::Logger.debug "BADASDASDASDASDASD"
-    #         # ToDo::Logger.debug (JSON.parse(request.body.read))
-    
-    #         @request_payload = request.body.read
-    #     end
-    # end
-      
-
-    get '/' do
-        "Hello, This is the Task service REST API. Enjoy!"
-    end
-    
-
-    # curl --header "Content-Type: application/json"  --request POST --data '{"user":"1234","title":"ToDo","description":"blablabla...","due_date":"2017-01-17T12:31:26.695+11:00"}' http://localhost/task-api/task
     post "/tasks" do
-        data = JSON.parse(request.body.read)
+        ToDo::Logger.debug "POST tasks"
         
-        id = TaskManager.create_task(data['task']['user'], data['task']['title'], data['task']['description'], data['task']['due_date'])
+        payload = JSON.parse(request.body.read)
+    
+        ToDo::Logger.debug payload
         
-        object = {
-            '_id' => id.to_s,
-            'user' => data['task']['user'],
-            'title' => data['task']['title'],
-            'description' => data['task']['description'],
-            'due_date' => data['task']['due_date'],
+        ToDo::Logger.debug payload['data']
+        attributes = payload['data']['attributes']
+        relationships = payload['data']['relationships']
+    
+        ToDo::Logger.debug attributes
+        ToDo::Logger.debug relationships
+
+        inserted_task = TaskManager.create_task(relationships['owner']['data']['id'], attributes['title'], attributes['description'], attributes['due_date'])
+        
+        response = {
+            :data => inserted_task,
         }
-        
-        [ 200, object.to_json ]
+        ToDo::Logger.debug response
+
+        [ 200, response.to_json ]
     end
 
     patch "/tasks/:id" do |id|
+        ToDo::Logger.debug "PATCH tasks"
+
         data = JSON.parse(request.body.read)
         data.delete!(:_id)
+
+        ToDo::Logger.debug data
+
         response = TaskManager.update_one(id, data)
-        [200, response.to_json]
+
+        response = {
+            :data => response,
+        }
+
+        headers['Content-Type'] = 'application/vnd.api+json'
+        ToDo::Logger.debug response.to_json
+    
+        [ 200, response.to_json ]
     end
 
 
     delete "/tasks/:id" do |id|
+        ToDo::Logger.debug "DELETE tasks"
+        ToDo::Logger.debug id
+        headers['Content-Type'] = 'application/vnd.api+json'
+
         response = TaskManager.delete_task(id)
-        [200, response.to_json]
+        response = {
+            :data => response,
+        }
+
+        [ 200, response.to_json ]
     end
 
     get "/tasks/:id" do |id|
+        ToDo::Logger.debug "GET task"
         ToDo::Logger.debug id
+
         response = TaskManager.find_task(id)
+        response = {
+            :data => response,
+        }
+
         ToDo::Logger.debug response.to_json
-        [200, response.to_json]
+        [ 200, response.to_json ]
     end
 
     get "/tasks" do
-        if params[:user] != nil 
-            params[:user] = params[:user].to_i
-        end
+        ToDo::Logger.debug "GET tasks"
         ToDo::Logger.debug params
+        
         response = TaskManager.find(params)
-        ToDo::Logger.debug response.to_a()
-        [200, response.to_a().to_json]
+        response = {
+            :data => response,
+        }
+        ToDo::Logger.debug response
+
+        [ 200, response.to_json ]
     end
 end
 

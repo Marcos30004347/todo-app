@@ -39,9 +39,9 @@ class String
 end
   
 class NilClass
-def to_bson_id
-    self
-end
+    def to_bson_id
+        self
+    end
 end
 
 class TaskManager
@@ -56,36 +56,62 @@ class TaskManager
     end
 
     def self.create_task(user, title, description, due_date)
-        #Verify date format
         if not date_valid?(due_date)
             raise InvalidDateException.new
         end
-    
-        @@task_collection.insert_one({
-            'user'          => user,
-            'title'         => title,
-            'state'         => 0,
-            'description'   => description,
-            'due_date'      => due_date
-        }).inserted_id
+        
+        object = {
+            :attributes => {
+                :title         => title,
+                :description   => description,
+                :due_date      => due_date
+            },
+            :relationships => {
+                :owner => {
+                    :data => {
+                        :type => 'users',
+                        :id => user
+                    }
+                },
+            },
+        }
+
+        ToDo::Logger.debug object
+        
+        object[:id] = @@task_collection.insert_one(object).inserted_id.to_s
+        object[:type] = 'tasks'
+
+        ToDo::Logger.debug object
+        object
     end
 
     def self.update_one(id, values)
         @@task_collection.update_one(
             { '_id' => id.to_bson_id },
-            { '$set' => values }
+            { '$set' => { 'atributes' => values } }
         )
+        self.find_task(id);
     end
 
     def self.delete_task(id)
+        deleted_task = self.find_task(id);
         @@task_collection.delete_one({ '_id' => id.to_bson_id })
+        deleted_task
     end
 
     def self.find_task(id)
-        @@task_collection.find({ '_id' => id.to_bson_id }).first
+        @@task_collection.aggregate([
+            { '$match' => { '_id' => id.to_bson_id } },
+            { '$addFields' => { 'id' => '$_id', 'type' => 'task' } },
+            { '$unset' => ['_id'] }
+        ]).first
     end
 
     def self.find(query)
-        @@task_collection.find(query)
+        @@task_collection.aggregate([
+            { '$match' => query },
+            { '$addFields' => { 'id' => '$_id', 'type' => 'task' } },
+            { '$unset' => ['_id'] }
+        ]).to_a
     end
 end
