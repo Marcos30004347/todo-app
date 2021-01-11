@@ -1,3 +1,9 @@
 <h1>To do App</h1>
-<TaskList @title="To do" @createTask={{this.createTask}} @tasks={{@model.tasks}}/>
+
+{{#each @model as |task|}}
+  <h3>{{task.title}}</h3>
+  <h4>{{task.description}}</h4>
+  <h5>{{task.user}}</h5>
+{{/each}}
+
 {{outlet}}

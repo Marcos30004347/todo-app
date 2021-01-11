@@ -5,5 +5,5 @@ RUN rm /etc/nginx/conf.d/default.conf
 
 RUN echo "/etc/nginx/nginx.conf"
 
-COPY ./nginx.conf /etc/nginx/conf.d/
+COPY ./etc/nginx/conf.d/ /etc/nginx/conf.d/
 EXPOSE 1000

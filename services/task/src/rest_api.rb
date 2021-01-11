@@ -31,82 +31,50 @@ class TaskServiceRESTAPI < Sinatra::Base
     
 
     # curl --header "Content-Type: application/json"  --request POST --data '{"user":"1234","title":"ToDo","description":"blablabla...","due_date":"2017-01-17T12:31:26.695+11:00"}' http://localhost/task-api/task
-    post "/task" do
-        # begin
-            data = JSON.parse(request.body.read)
-            id = TaskManager.create_task(data['user'], data['title'], data['description'], data['due_date'])
-            [200, id.to_s]
-        # rescue
-        #     [400, "Error on creating task"]
-        # end
+    post "/tasks" do
+        data = JSON.parse(request.body.read)
+        
+        id = TaskManager.create_task(data['task']['user'], data['task']['title'], data['task']['description'], data['task']['due_date'])
+        
+        object = {
+            '_id' => id.to_s,
+            'user' => data['task']['user'],
+            'title' => data['task']['title'],
+            'description' => data['task']['description'],
+            'due_date' => data['task']['due_date'],
+        }
+        
+        [ 200, object.to_json ]
     end
 
-    patch "/task/:id/title/:title" do |id, title|
-        # begin
-            response = TaskManager.update_task_title(id, title)
-            [200, response.to_json]
-        # rescue
-        #     [400, "Error on creating task"]
-        # end
+    patch "/tasks/:id" do |id|
+        data = JSON.parse(request.body.read)
+        data.delete!(:_id)
+        response = TaskManager.update_one(id, data)
+        [200, response.to_json]
     end
 
-    patch "/task/:id/description/:description" do |id, description|
-        # begin
-            response = TaskManager.update_task_description(id, description)
-            [200, response.to_json]
-        # rescue
-        #     [400, "Error on creating task"]
-        # end
+
+    delete "/tasks/:id" do |id|
+        response = TaskManager.delete_task(id)
+        [200, response.to_json]
     end
 
-    patch "/task/:id/due_date/:due_date" do |id, due_date|
-        # begin
-            response = TaskManager.update_task_due_date(id, due_date)
-            [200, response.to_json]
-        # rescue
-        #     [400, "Error on creating task"]
-        # end
+    get "/tasks/:id" do |id|
+        ToDo::Logger.debug id
+        response = TaskManager.find_task(id)
+        ToDo::Logger.debug response.to_json
+        [200, response.to_json]
     end
 
-    patch "/task/:id/state/:state" do |id, state|
-        # begin
-            response = TaskManager.update_task_state(id, state)
-            [200, response.to_json]
-        # rescue
-        #     [400, "Error on creating task"]
-        # end
-    end
-
-    delete "/task/:id" do |id|
-        # begin
-            response = TaskManager.delete_task(id)
-            [200, response.to_json]
-        # rescue
-        #     [400, "Error on creating task"]
-        # end
-    end
-
-    get "/task/:id" do |id|
-        # begin
-            ToDo::Logger.debug id
-            response = TaskManager.find_task(id)
-            ToDo::Logger.debug response.to_json
-            [200, response.to_json]
-        # rescue
-            # [400, "Error on finding task"]
-        # end
-    end
-
-    # curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET http://localhost/task-api/task/5ff8c52e73681500075db023
-    get "/tasks/user/:id" do |id|
-        # begin
-            ToDo::Logger.debug id
-            response = TaskManager.find_task(id)
-            ToDo::Logger.debug response.to_json
-            [200, response.to_json]
-        # rescue
-        #     [400, "Error on creating task"]
-        # end
+    get "/tasks" do
+        if params[:user] != nil 
+            params[:user] = params[:user].to_i
+        end
+        ToDo::Logger.debug params
+        response = TaskManager.find(params)
+        ToDo::Logger.debug response.to_a()
+        [200, response.to_a().to_json]
     end
 end
 

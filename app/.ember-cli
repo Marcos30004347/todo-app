@@ -5,6 +5,6 @@
 
     Setting `disableAnalytics` to true will prevent any data from being sent.
   */
-  "port": 80,
+  "port": 4200,
   "disableAnalytics": false
 }

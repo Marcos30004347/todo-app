@@ -70,36 +70,10 @@ class TaskManager
         }).inserted_id
     end
 
-    def self.update_task_title(id, new_title)
+    def self.update_one(id, values)
         @@task_collection.update_one(
             { '_id' => id.to_bson_id },
-            { '$set' => { 'title' => new_title } }
-        )
-    end
-
-    def self.update_task_state(id, new_state)
-        @@task_collection.update_one(
-            { '_id' => id.to_bson_id },
-            { '$set' => { 'state' => new_state } }
-        )
-    end
-
-    def self.update_task_description(id, new_description)
-        @@task_collection.update_one(
-            { '_id' => id.to_bson_id },
-            { '$set' => { 'description' => new_description } }
-        )
-    end
-
-    def self.update_task_due_date(id, new_due_date)
-        #Verify date format
-        if not date_valid?(new_due_date)
-            raise InvalidDateException.new
-        end
-    
-        @@task_collection.update_one(
-            { '_id' => id.to_bson_id },
-            { '$set' => { 'due_date' => new_due_date } }
+            { '$set' => values }
         )
     end
 
@@ -111,7 +85,7 @@ class TaskManager
         @@task_collection.find({ '_id' => id.to_bson_id }).first
     end
 
-    def self.find_user_tasks(user)
-        @@task_collection.find({ 'user' => user })
+    def self.find(query)
+        @@task_collection.find(query)
     end
 end

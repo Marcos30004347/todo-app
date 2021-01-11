@@ -5,6 +5,7 @@ WORKDIR /app
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
 
+ENV ENVIROMENT=production
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install net-tools nginx
 
@@ -24,12 +25,7 @@ RUN apt-get install -y \
     lsb-release \
     ca-certificates \
     phantomjs \
-    bzip2 \
-    ufw \
-    nano \
-    dbus
-
-# RUN /etc/init.d/dbus start
+    bzip2
 
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
@@ -47,28 +43,18 @@ RUN npm install
 
 RUN ember build -prod
 
-# RUN sudo ufw allow 'Nginx HTTP'
-
 RUN mkdir -p /usr/share/nginx/var/log/nginx/
 RUN touch /usr/share/nginx/var/log/nginx/access.log
 
 RUN rm -f /etc/nginx/fastcgi.conf /etc/nginx/fastcgi_params && \
     rm -f /etc/nginx/snippets/fastcgi-php.conf
 
-# RUN mkdir -p /var/www/todo.com
-# RUN chmod -R 755 /var/www/todo.com
-
-# RUN nano /etc/nginx/sites-available/todo.com
-
-# RUN ln -s /etc/nginx/sites-available/todo.com /etc/nginx/sites-enabled/
-# COPY --from=ember /app/dist /var/www/todo.com
-# RUN cp -a /app/dist /var/www/todo.com
-
-# RUN rm /etc/nginx/conf.d/default.conf
 RUN rm -v /etc/nginx/nginx.conf
 
 COPY ./etc/ /etc/
 
 EXPOSE 80
 
-ENTRYPOINT ["/usr/sbin/nginx", "-g", "daemon off;"]
+RUN make setup
+
+ENTRYPOINT ["make", "run"]

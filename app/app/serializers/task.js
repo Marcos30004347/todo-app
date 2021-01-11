@@ -1,18 +1,25 @@
-import JSONAPISerializer from '@ember-data/serializer/json-api';
+import RESTSerializer from '@ember-data/serializer/rest';
+import { underscore } from '@ember/string';
 
-export default class TaskSerializer extends JSONAPISerializer {
+export default class TaskSerializer extends RESTSerializer {
   primaryKey = '_id';
-  attrs = {
-    // familyName: 'familyNameOfPerson'
-  };
 
   keyForAttribute(attr) {
     return underscore(attr);
   }
 
-  serialize(snapshot, options) {
-    let json = super.serialize(...arguments);
-    json.data.due_date = new Date(json.data.due_date)
-    return json;
+  normalizeResponse(store, primaryModelClass, payload, id, requestType) {
+    console.log(payload);
+
+    if(!Array.isArray(payload))
+      payload = [payload]
+
+    payload = {
+      tasks: payload
+    }
+
+    return super.normalizeResponse(store, primaryModelClass, payload, id, requestType);
   }
+
+
 }

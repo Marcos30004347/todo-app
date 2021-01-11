@@ -1,17 +1,19 @@
 version: '3'
 
 services:
-  web-app:
-    container_name: web-app
-    restart: always
-    build: ./app
-    ports:
-      - '80:80'
-    links:
-      - api-service
-    volumes:
-      - ./app:/app
-      
+  # web-app:
+  #   container_name: web-app
+  #   restart: always
+  #   build: ./app
+  #   ports:
+  #     - '80:80'
+  #   links:
+  #     - api-service
+  #   volumes:
+  #     - ./app:/app
+  #   environment: 
+  #     - ENVIROMENT=development
+
   api-service:
     container_name: todo-api
     restart: always
@@ -22,8 +24,10 @@ services:
       - task-service
       - auth-service
     volumes:
-      - ./services/api:/api-service
-      
+      - ./services/api/etc/nginx/conf.d/:/etc/nginx/conf.d/
+    environment: 
+      - ENVIROMENT=development
+
   auth-service:
     container_name: auth-service
     restart: always
@@ -37,7 +41,9 @@ services:
       - ./services/auth/src:/auth-service/src
       - ./services/auth/lib:/auth-service/lib
       - ./services/auth/protos:/auth-service/protos
-
+    environment: 
+      - ENVIROMENT=development
+    
   task-service:
     container_name: task-service
     restart: always
@@ -53,6 +59,12 @@ services:
       - ./services/task/src:/task-service/src
       - ./services/task/lib:/task-service/lib
       - ./services/task/protos:/task-service/protos
+    environment: 
+      - ENVIROMENT=development
+
+
+
+
 
 
   taskdb:
@@ -70,6 +82,10 @@ services:
       - '27018:27018'
     volumes:
       - auth-mongodb-volume:/data/db 
+
+
+
+
 
 volumes:
   task-mongodb-volume:  
