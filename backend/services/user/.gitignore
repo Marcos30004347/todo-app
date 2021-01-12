@@ -1,4 +1,4 @@
 protos/
 lib/
-build/
 go.sum
+user-service

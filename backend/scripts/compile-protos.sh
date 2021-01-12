@@ -9,7 +9,9 @@ for path in `ls -d ./services/*` ; do
             if [[ $left == required_libraries ]]; then
                 echo $right | tr \, \\n | while read lang ; do
                     for filename in $path/protos/*.proto; do
-                        make -C $path compile-protos
+                        cd $path
+                        make compile-protos
+                        cd ..
                     done;
                 done;
             fi;
