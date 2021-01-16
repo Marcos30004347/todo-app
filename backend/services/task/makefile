@@ -1,5 +1,5 @@
 run:
-	bundle exec ruby -Ilib/ruby/lib ./src/index.rb 
+	bundle exec ruby -Isrc ./src/index.rb
 
 setup: install-dependencies compile-protos
 	for script in `ls -d ./lib/bash/*`; do \
@@ -20,7 +20,20 @@ install-dependencies:
 	gem install grpc-tools
 	bundle install
 
-compile-protos:
-	for proto in `ls -d ./protos/*`; do \
-		grpc_tools_ruby_protoc -I ./protos --ruby_out=lib/ruby/lib --grpc_out=lib/ruby/lib $$proto; \
+codegen:
+	if [ -d ./service/codegen ]; then m -rf ./service/codegen/pb; fi
+	mkdir -p ./service/codegen/pb
+	for service in `ls -d ./protos/*`; do \
+	  	for serv_ver in `ls -d $$service/*`; do \
+	    	for proto in `ls -d $$serv_ver/*`; do \
+			  	grpc_tools_ruby_protoc -I ./protos --ruby_out=service/codegen/pb --grpc_out=service/codegen/pb $$proto; \
+      		done; \
+    	done; \
 	done
+
+	# if [ -d "src/services/grpc" ]; then rm -rf src/services/grpc; fi
+	# mkdir -p src/services/grpc
+
+	# for proto in `ls -d ./protos/*`; do \
+	# 	grpc_tools_ruby_protoc -I ./protos --ruby_out=src/services/grpc --grpc_out=src/services/grpc $$proto; \
+	# done

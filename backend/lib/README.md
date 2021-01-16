@@ -1,1 +1,0 @@
-This folder has code that may be shared between Mircoservices.

@@ -38,12 +38,26 @@ services:
     depends_on:
           - "authdb"
     volumes:
-      - ./services/auth/src:/auth-service/src
-      - ./services/auth/lib:/auth-service/lib
-      - ./services/auth/protos:/auth-service/protos
+      - ./services/auth:/auth-service
     environment: 
       - ENVIROMENT=development
     
+  user-service:
+    container_name: user-service
+    restart: always
+    build: ./services/user
+    ports: 
+      - '30051:30051'
+      - '30052:30052'
+    links:
+      - taskdb
+    depends_on:
+          - "userdb"
+    volumes:
+      - ./services/user:/user-service
+    environment: 
+      - GIN_MODE=debug
+
   task-service:
     container_name: task-service
     restart: always
@@ -56,15 +70,9 @@ services:
     depends_on:
           - "taskdb"
     volumes:
-      - ./services/task/src:/task-service/src
-      - ./services/task/lib:/task-service/lib
-      - ./services/task/protos:/task-service/protos
+      - ./services/task:/task-service
     environment: 
       - ENVIROMENT=development
-
-
-
-
 
 
   taskdb:
@@ -77,11 +85,20 @@ services:
 
   authdb:
     image: mongo
-    container_name: authdb # connect using url=mongodb://taskdb:27017
+    container_name: authdb # connect using url=mongodb://authdb:27017
     ports: 
-      - '27018:27018'
+      - '27018:27017'
     volumes:
       - auth-mongodb-volume:/data/db 
+
+  userdb:
+    image: mongo
+    container_name: userdb # connect using url=mongodb://userdb:27017
+    ports: 
+      - '27019:27017'
+    volumes:
+      - user-mongodb-volume:/data/db 
+
 
 
 

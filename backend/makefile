@@ -31,9 +31,7 @@ setup:
 	for script in `ls -d ./scripts/*`; do \
 		chmod 777 $$script; \
 	done
-	./scripts/setup-libraries.sh
 	./scripts/setup-protos.sh
-	./scripts/compile-protos.sh
 
 
 install-dependencies:

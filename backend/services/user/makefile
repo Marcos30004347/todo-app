@@ -1,24 +1,26 @@
 all:
-	go build -o user-service src/main.go
-
+	if [ -f user-service ]; then rm user-service; fi
+	cd service && go build -o user-service main.go
+	cp service/user-service .
+	rm service/user-service
 # run:
 #     ./user-service
 
-dependencies:
-	go get google.golang.org/protobuf/cmd/protoc-gen-go google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	PROTOC_ZIP=protoc-3.14.0-osx-x86_64.zip
-	curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.14.0/$PROTOC_ZIP
-	sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
-	sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
-	rm -f $PROTOC_ZIP
-	export PATH="$PATH:$(go env GOPATH)/bin"
+
+docker-image:
+	docker build -t user-service .
+
+run-image:
+	docker run -p 8080:8080 user-service:latest
 
 compile-protos:
+	if [ -d ./service/codegen ]; then rm -rf ./service/codegen; fi
+	mkdir -p service/codegen
 	for service in `ls -d ./protos/*`; do \
-		echo $$service; \
-		for proto in `ls -d $$service/*`; do \
-			protoc --go_out=./lib --go_opt=paths=source_relative \
-			--go-grpc_out=./lib --go-grpc_opt=paths=source_relative \
-			$$proto; \
-		done; \
+	  for serv_ver in `ls -d $$service/*`; do \
+	    for proto in `ls -d $$serv_ver/*`; do \
+		    protoc --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative --go_out=./service/codegen --go-grpc_out=./service/codegen $$proto; \
+      done; \
+    done; \
 	done
+	mv ./service/codegen/protos ./service/codegen/pb

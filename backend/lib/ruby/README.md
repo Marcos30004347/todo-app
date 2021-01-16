@@ -1,1 +1,0 @@
-The Ruby code that may be shared between Microservices that uses the Ruby programming language.
