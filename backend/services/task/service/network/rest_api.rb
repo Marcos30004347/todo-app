@@ -1,13 +1,13 @@
 #!/usr/bin/ruby
 
 require 'sinatra'
-require_relative 'task-manager'
+require 'service/task-manager'
 require 'lib/logger'
 
 class TaskServiceRESTAPI < Sinatra::Base
   configure do
     set :bind, '0.0.0.0'
-    set :port, 50052
+    set :port, 50051
     set :show_exceptions, :after_handler
     set :server, :puma
   end

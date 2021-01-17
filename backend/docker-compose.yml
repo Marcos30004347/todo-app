@@ -1,25 +1,12 @@
 version: '3'
 
 services:
-  # web-app:
-  #   container_name: web-app
-  #   restart: always
-  #   build: ./app
-  #   ports:
-  #     - '80:80'
-  #   links:
-  #     - api-service
-  #   volumes:
-  #     - ./app:/app
-  #   environment: 
-  #     - ENVIROMENT=development
-
   api-service:
     container_name: todo-api
     restart: always
     build: ./services/api
     ports:
-      - '1000:1000'
+      - 1000:1000
     links:
       - task-service
       - auth-service
@@ -33,12 +20,12 @@ services:
     restart: always
     build: ./services/auth
     ports: 
-      - '8080:8080'
-      - '8081:8081'
+      - 10051:10051
+      - 10052:10052
     depends_on:
           - "authdb"
     volumes:
-      - ./services/auth:/auth-service
+      - ./services/auth/service:/auth-service/service
     environment: 
       - ENVIROMENT=development
     
@@ -47,10 +34,10 @@ services:
     restart: always
     build: ./services/user
     ports: 
-      - '30051:30051'
-      - '30052:30052'
+      - 30051:30051
+      - 30052:30052
     links:
-      - taskdb
+      - userdb
     depends_on:
           - "userdb"
     volumes:
@@ -63,8 +50,8 @@ services:
     restart: always
     build: ./services/task
     ports: 
-      - '50051:50051'
-      - '50052:50052'
+      - 50051:50051
+      - 50052:50052
     links:
       - taskdb
     depends_on:
@@ -73,7 +60,6 @@ services:
       - ./services/task:/task-service
     environment: 
       - ENVIROMENT=development
-
 
   taskdb:
     image: mongo
@@ -93,7 +79,7 @@ services:
 
   userdb:
     image: mongo
-    container_name: userdb # connect using url=mongodb://userdb:27017
+    container_name: userdb # connect using url=mongodb://userdb:27019
     ports: 
       - '27019:27017'
     volumes:
@@ -101,9 +87,7 @@ services:
 
 
 
-
-
-
 volumes:
   task-mongodb-volume:  
+  user-mongodb-volume:  
   auth-mongodb-volume:  

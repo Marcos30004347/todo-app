@@ -1,5 +1,5 @@
 require 'logger'
-require 'todo-string'
+require_relative 'string'
 
 class Logger
   def initialize(sync = true)

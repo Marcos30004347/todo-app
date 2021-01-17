@@ -21,7 +21,7 @@ type AuthService struct {
 }
 
 func (service *AuthService) StartUp() {
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial("localhost:8081", grpc.WithInsecure(), grpc.WithBlock())
 
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)

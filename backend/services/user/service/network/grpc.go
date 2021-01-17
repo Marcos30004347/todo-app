@@ -2,6 +2,7 @@ package network
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -10,7 +11,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-const port = ":50051"
+const port = ":30051"
 
 type GreaterHandler struct {
 	user.UnimplementedUserServer
@@ -22,31 +23,31 @@ func (s *GreaterHandler) SayHello(ctx context.Context, in *user.HelloRequest) (*
 }
 
 type GRPCServer struct {
-	listener net.Listener
-	server   *grpc.Server
+	server *grpc.Server
+	port   int
 }
 
-func (server *GRPCServer) Run() error {
-	lis, err := net.Listen("tcp", port)
+var grpc_server *GRPCServer = nil
 
-	server.listener = lis
+func RunGRPCServer() error {
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpc_server.port))
 
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
+		panic(-1)
 	}
 
-	server.server = grpc.NewServer()
+	fmt.Println(fmt.Sprintf("GRPC PORT = :%d", grpc_server.port))
 
-	user.RegisterUserServer(server.server, &GreaterHandler{})
-
-	if err := server.server.Serve(server.listener); err != nil {
-		return err
-	}
-
-	return nil
+	return grpc_server.server.Serve(lis)
 }
 
-func InitGRPCServer() *GRPCServer {
-	grpc := &GRPCServer{}
-	return grpc
+func InitGRPCServer(port int) {
+	grpc_server = &GRPCServer{}
+	grpc_server.port = port
+
+	grpc_server.server = grpc.NewServer()
+
+	user.RegisterUserServer(grpc_server.server, &GreaterHandler{})
+
 }

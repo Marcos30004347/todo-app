@@ -15,31 +15,27 @@ type Network struct {
 	rest *RESTServer
 }
 
-func (net *Network) run() error {
-	net.grpc = InitGRPCServer()
-	net.rest = InitRESTServer()
+var network *Network = &Network{}
 
-	return nil
-}
+func InitNetword(rest_port int, grpc_port int) *Network {
+	net := &Network{}
 
-func InitNetword() *Network {
-	net := &Network{nil, nil}
-	err := net.run()
+	InitRESTServer(rest_port)
+	InitGRPCServer(grpc_port)
 
-	if err != nil {
-		log.Fatalf("failed to serve: %v", err)
-		panic(1)
-	}
+	net.grpc = grpc_server
+	net.rest = rest_server
+
 	return net
 }
 
-func (net *Network) Run() {
+func Run() {
 	g.Go(func() error {
-		return net.rest.Run()
+		return RunRESTServer()
 	})
 
 	g.Go(func() error {
-		return net.grpc.Run()
+		return RunGRPCServer()
 	})
 
 	err := g.Wait()

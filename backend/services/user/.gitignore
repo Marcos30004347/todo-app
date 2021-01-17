@@ -4,3 +4,4 @@ go.sum
 user-service
 user-server
 user-client
+executable

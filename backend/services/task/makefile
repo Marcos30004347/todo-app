@@ -1,10 +1,8 @@
 run:
-	bundle exec ruby -Isrc ./src/index.rb
+	bundle exec ruby -Iservice -Iservice/codegen/pb ./service/main.rb
 
 setup: install-dependencies compile-protos
-	for script in `ls -d ./lib/bash/*`; do \
-		chmod 777 $$script; \
-	done
+
 docker-image:
 	docker build -t task-service .
 
@@ -20,8 +18,8 @@ install-dependencies:
 	gem install grpc-tools
 	bundle install
 
-codegen:
-	if [ -d ./service/codegen ]; then m -rf ./service/codegen/pb; fi
+compile-protos:
+	if [ -d ./service/codegen ]; then rm -rf ./service/codegen/pb; fi
 	mkdir -p ./service/codegen/pb
 	for service in `ls -d ./protos/*`; do \
 	  	for serv_ver in `ls -d $$service/*`; do \

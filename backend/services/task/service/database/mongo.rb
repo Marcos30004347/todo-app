@@ -51,7 +51,7 @@ class Client
 
     def collection(coll)
         @database = @client.database
-        ToDo::MongoDB::Collection.new(@client[coll])
+        MongoDB::Collection.new(@client[coll])
     end
 end
 end

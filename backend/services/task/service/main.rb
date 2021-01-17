@@ -1,9 +1,9 @@
 #!/usr/bin/ruby
 
-require_relative 'lib/logger'
+require 'lib/logger'
 
-require_relative 'rest_api'
-require_relative 'grpc_api'
+require 'network/rest_api'
+require 'network/grpc_api'
 
 class TaskService
   def self.setup

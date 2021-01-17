@@ -2,8 +2,8 @@
 
 require 'date'
 
-require_relative 'lib/mongo'
-require_relative 'lib/logger'
+require 'database/mongo'
+require 'lib/logger'
 
 
 def date_valid?(date)
@@ -47,7 +47,7 @@ end
 
 class TaskManager
     def self.setup
-        @@mongo_client = ToDo::MongoDB::Client.new('taskdb:27017', 'tasks')
+        @@mongo_client = MongoDB::Client.new('taskdb:27017', 'tasks')
         @@task_collection = @@mongo_client.collection "tasks"
         @@is_connected = true
     end

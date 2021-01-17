@@ -1,27 +1,25 @@
 #!/usr/bin/ruby
 
-require_relative 'lib/mongo'
-require_relative 'lib/logger'
-require_relative 'lib/grpc'
+require 'lib/logger'
+require 'codegen/pb/task/v1/task_services_pb'
 
-require_relative 'services/grpc/helloworld_services_pb'
+require_relative 'grpc'
 
-
-class GreeterServer < Helloworld::Greeter::Service
+class TaskServer < Task::Task::Service
     def say_hello(hello_req, _unused_call)
-        Helloworld::HelloReply.new(message: "Hello #{hello_req.name}")
+      Task::HelloReply.new(message: "Hello #{hello_req.name}")
     end
 end
 
 class TaskServiceGRPCAPI
     def run!
-        this_dir = File.expand_path(File.dirname(__FILE__))
-        certs_dir = File.join(this_dir, '../certs')
+        # this_dir = File.expand_path(File.dirname(__FILE__))
+        # certs_dir = File.join(this_dir, '../certs')
 
-        files = ['ca.crt', 'server.key', 'server.crt']
-        certs = files.map { |f| File.open(File.join(certs_dir, f)).read }
+        # files = ['ca.crt', 'server.key', 'server.crt']
+        # certs = files.map { |f| File.open(File.join(certs_dir, f)).read }
 
-        server = GRPCServer.new(GreeterServer, '0.0.0.0:50051', certs)
+        server = GRPCServer.new(AuthServer, '0.0.0.0:50052')
         server.run
     end
 end

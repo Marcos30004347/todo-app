@@ -54,7 +54,7 @@ DEPENDENCIES
   grpc (~> 1.34)
   grpc-tools (~> 1.34)
   json (~> 2.5, >= 2.5.1)
-  mongo (~> 2.2, >= 2.2.5)
+  mongo (~> 2.14)
   puma (~> 5.1, >= 5.1.1)
   rack-ssl (~> 1.4, >= 1.4.1)
   sinatra (~> 2.1)

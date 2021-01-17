@@ -1,10 +1,11 @@
 all:
-	if [ -f user-service ]; then rm user-service; fi
-	cd service && go build -o user-service main.go
-	cp service/user-service .
-	rm service/user-service
-# run:
-#     ./user-service
+	if [ -f executable ]; then rm executable; fi
+	cd service && go build -o executable main.go
+	cp service/executable .
+	rm service/executable
+
+run:
+	./executable
 
 
 docker-image:

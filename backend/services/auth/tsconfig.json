@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    "strictPropertyInitialization": false,
 
     /* Basic Options */
     // "incremental": true,                   /* Enable incremental compilation */
@@ -69,7 +70,8 @@
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["lib/typescript/lib/*"],
+      "@codegen/*": ["service/codegen/*"],
+      "@auth/*": ["service/*"],
     }
   }
 }

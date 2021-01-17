@@ -1,6 +1,7 @@
 package network
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -10,6 +11,8 @@ import (
 type RESTServer struct {
 	server *http.Server
 }
+
+var rest_server *RESTServer = nil
 
 func ping(c *gin.Context) {
 	c.JSON(200, gin.H{
@@ -25,20 +28,17 @@ func router01() http.Handler {
 	return e
 }
 
-func (serv *RESTServer) Run() error {
-	serv.server = &http.Server{
-		Addr:         ":8080",
+func RunRESTServer() error {
+	return rest_server.server.ListenAndServe()
+}
+
+func InitRESTServer(port int) {
+	rest_server = &RESTServer{}
+
+	rest_server.server = &http.Server{
+		Addr:         fmt.Sprintf(":%d", port),
 		Handler:      router01(),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-
-	return serv.server.ListenAndServe()
-
-}
-
-func InitRESTServer() *RESTServer {
-	rest := &RESTServer{}
-	rest.Run()
-	return rest
 }

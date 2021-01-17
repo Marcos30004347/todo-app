@@ -7,23 +7,19 @@
 # $LOAD_PATH.unshift this_dir unless $LOAD_PATH.include?(this_dir)
 
 require 'grpc'
-require 'helloworld_services_pb'
+require 'codegen/pb/auth/v1/auth_services_pb'
 
 require_relative 'lib/grpc'
 
 def main
-  this_dir = File.expand_path(File.dirname(__FILE__))
-  certs_dir = File.join(this_dir, '../certs')
+  # this_dir = File.expand_path(File.dirname(__FILE__))
+  # certs_dir = File.join(this_dir, '../certs')
 
-  files = ['ca.crt', 'client.key', 'client.crt']
-  certs = files.map { |f| File.open(File.join(certs_dir, f)).read }
+  # files = ['ca.crt', 'client.key', 'client.crt']
+  # certs = files.map { |f| File.open(File.join(certs_dir, f)).read }
 
-  connection = GRPCConnection.new('localhost:50051', certs)
+  connection = GRPCConnection.new('localhost:50051')
   client = connection.client
-
-  p "Greeting: #{client.say_hello(Helloworld::HelloRequest.new(name: "Marcos")).message}"
-
-
 end
 
 main
